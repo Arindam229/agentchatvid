@@ -373,8 +373,10 @@ async def main():
             
         if not valid_gen:
             print(f"  [!] Warning: Using silent fallback for msg {i}")
-            # Create a 0.3s silent clip if TTS fails
-            audio_clip = ColorClip(size=(1,1), color=(0,0,0)).set_duration(0.3).set_audio(None).audio
+            import numpy as np
+            from moviepy.audio.AudioClip import AudioArrayClip
+            silent_samples = np.zeros((int(44100 * 0.3), 2), dtype=np.float32)
+            audio_clip = AudioArrayClip(silent_samples, fps=44100)
             duration = 0.3
         else:
             duration = audio_clip.duration + 0.05
@@ -446,7 +448,8 @@ async def main():
                 pass
             
             # Message audio
-            audios.append(audio_clip.set_start(t_start + 0.1))
+            if audio_clip is not None:
+                audios.append(audio_clip.set_start(t_start + 0.1))
             
             # Balloon clip
             clip = ImageClip(img_path).set_start(t_start)
