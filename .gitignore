@@ -24,6 +24,14 @@ imessage_bg.png
 imessage_header.png
 input.json
 
+# StoryShorts Agent
+token.json
+storyshortsagent/.env
+storyshortsagent/token.json
+storyshortsagent/client_secrets.json
+storyshortsagent/temp_story/
+storyshortsagent/output/
+
 # OS files
 .DS_Store
 Thumbs.db

@@ -1,0 +1,14 @@
+google-generativeai
+kokoro-onnx
+soundfile
+faster-whisper
+Pillow
+moviepy
+requests
+python-dotenv
+torch
+torchvision
+diffusers
+transformers
+accelerate
+gradio_client

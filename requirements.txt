@@ -1,5 +1,5 @@
 edge-tts
-Pillow
+Pillow==9.5.0
 moviepy==1.0.3
 google-genai
 google-generativeai
