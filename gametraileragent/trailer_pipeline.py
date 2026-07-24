@@ -610,8 +610,8 @@ def main():
         tags=["gaming", "trailers", genre.lower(), "top 5"],
         category_id="20",
         thumbnail_path=thumbnail_path,
-        client_secrets_file="spiderman-secret.json",
-        token_file="spiderman-token.json"
+        client_secrets_file="client_secrets.json",
+        token_file="token.json"
     )
     
     if video_id:

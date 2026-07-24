@@ -8,29 +8,62 @@ from google.oauth2.credentials import Credentials
 
 SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
 
+def resolve_file_path(target, fallbacks):
+    candidates = [target] + fallbacks
+    for path in candidates:
+        if path and os.path.exists(path):
+            return path
+    return target
+
 def get_youtube_service(client_secrets_file='client_secrets.json', token_file='token.json'):
+    resolved_token_file = resolve_file_path(
+        token_file,
+        [
+            'token.json',
+            'token.pickle',
+            os.path.join('..', 'token.json'),
+            os.path.join('..', 'token.pickle'),
+            os.path.join('..', 'gametraileragent', 'token.json')
+        ]
+    )
+
+    resolved_secrets_file = resolve_file_path(
+        client_secrets_file,
+        [
+            'client_secrets.json',
+            os.path.join('..', 'client_secrets.json'),
+            os.path.join('..', 'gametraileragent', 'client_secrets.json')
+        ]
+    )
+
     creds = None
-    if os.path.exists(token_file):
+    if os.path.exists(resolved_token_file):
         try:
-            creds = Credentials.from_authorized_user_file(token_file, SCOPES)
+            creds = Credentials.from_authorized_user_file(resolved_token_file, SCOPES)
         except Exception:
             import pickle
             try:
-                with open(token_file, "rb") as f:
+                with open(resolved_token_file, "rb") as f:
                     creds = pickle.load(f)
             except Exception as e:
-                print(f"Error loading credentials from {token_file}: {e}")
+                print(f"Error loading credentials from {resolved_token_file}: {e}")
+
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            if not os.path.exists(client_secrets_file):
+            if not os.path.exists(resolved_secrets_file):
                 print(f"Error: {client_secrets_file} not found.")
                 return None
-            flow = InstalledAppFlow.from_client_secrets_file(client_secrets_file, SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file(resolved_secrets_file, SCOPES)
             creds = flow.run_local_server(port=0)
-        with open(token_file, 'w') as token:
-            token.write(creds.to_json())
+        
+        target_save = resolved_token_file if os.path.exists(resolved_token_file) else token_file
+        try:
+            with open(target_save, 'w') as token:
+                token.write(creds.to_json())
+        except Exception:
+            pass
 
     return build('youtube', 'v3', credentials=creds)
 
