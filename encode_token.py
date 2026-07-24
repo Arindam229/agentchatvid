@@ -5,29 +5,27 @@ print("\n=======================================================")
 print("         GITHUB ACTIONS SECRETS GENERATOR")
 print("=======================================================\n")
 
-# 1. Chat Vid Token (token.pickle)
-token_pickle = "token.pickle"
-if os.path.exists(token_pickle):
-    with open(token_pickle, "rb") as f:
-        encoded_pickle = base64.b64encode(f.read()).decode("utf-8")
-    print(">>> YOUTUBE_TOKEN_BASE64 (for Chat Vid agent):")
-    print(encoded_pickle)
-    print("\n-------------------------------------------------------\n")
+token_found = False
+
+# Try token.pickle first, fallback to token.json
+if os.path.exists("token.pickle"):
+    token_path = "token.pickle"
+elif os.path.exists(os.path.join("storyshortsagent", "token.json")):
+    token_path = os.path.join("storyshortsagent", "token.json")
+elif os.path.exists("token.json"):
+    token_path = "token.json"
 else:
-    print("[-] token.pickle not found in root directory.\n")
+    token_path = None
 
-# 2. StoryShorts Token (storyshortsagent/token.json)
-token_json = os.path.join("storyshortsagent", "token.json")
-if not os.path.exists(token_json) and os.path.exists("token.json"):
-    token_json = "token.json"
-
-if os.path.exists(token_json):
-    with open(token_json, "rb") as f:
-        encoded_json = base64.b64encode(f.read()).decode("utf-8")
-    print(">>> STORYSHORTS_TOKEN_BASE64 (for StoryShorts agent):")
-    print(encoded_json)
-    print("\n-------------------------------------------------------\n")
+if token_path:
+    with open(token_path, "rb") as f:
+        encoded_token = base64.b64encode(f.read()).decode("utf-8")
+    print(f"[+] Loaded credentials from: {token_path}")
+    print("\n>>> YOUTUBE_TOKEN_BASE64 Secret String:")
+    print(encoded_token)
+    print("\n=======================================================")
+    print("Copy the string above and paste it into GitHub Secret named: YOUTUBE_TOKEN_BASE64")
+    print("This single token will authorize uploads for BOTH pipelines!")
+    print("=======================================================\n")
 else:
-    print("[-] token.json not found in storyshortsagent/ directory.\n")
-
-print("Copy the values above and add them as secrets in your GitHub Repository Settings.")
+    print("[-] Error: No token file (token.pickle or token.json) found.")
