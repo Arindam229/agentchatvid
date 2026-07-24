@@ -1,0 +1,29 @@
+# Environment & Credentials Secrets
+.env
+token.pickle
+client_secrets.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.venv/
+
+# Generated Media & Large Files
+background.mp4
+*.mp4
+*.torrent
+audio_*.mp3
+audio_*.wav
+bubble_*.png
+caption_*.png
+fetched_img_*.png
+imessage_bg.png
+imessage_header.png
+input.json
+
+# OS files
+.DS_Store
+Thumbs.db
