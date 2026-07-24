@@ -9,7 +9,8 @@ from google import genai
 from dotenv import load_dotenv
 
 load_dotenv()
-_CLIENT = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+_CLIENT = genai.Client(api_key=api_key)
 
 # Try these models in order until one works (quota fallback)
 MODELS = [
