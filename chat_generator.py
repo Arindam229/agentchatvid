@@ -6,11 +6,16 @@ import urllib.parse
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 from moviepy.editor import VideoFileClip, ImageClip, CompositeVideoClip, AudioFileClip, CompositeAudioClip, ColorClip
 import soundfile as sf
-from kokoro_onnx import Kokoro
+try:
+    from kokoro_onnx import Kokoro
+except ImportError:
+    Kokoro = None
 
 KOKORO_MODEL = None
 def get_kokoro_model():
     global KOKORO_MODEL
+    if Kokoro is None:
+        return None
     if KOKORO_MODEL is None:
         model_path = r"C:\Users\Arind\OneDrive\Desktop\agents\spidermanagent\kokoro-v1.0.onnx"
         voices_path = r"C:\Users\Arind\OneDrive\Desktop\agents\spidermanagent\voices-v1.0.bin"

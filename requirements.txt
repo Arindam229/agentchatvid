@@ -1,7 +1,9 @@
 edge-tts
 Pillow
 moviepy==1.0.3
+google-genai
 google-generativeai
+soundfile
 python-dotenv
 google-api-python-client
 google-auth-httplib2
