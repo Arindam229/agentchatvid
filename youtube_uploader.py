@@ -7,7 +7,10 @@ from googleapiclient.http import MediaFileUpload
 import pickle
 from google.auth.transport.requests import Request
 
-scopes = ["https://www.googleapis.com/auth/youtube.upload"]
+scopes = [
+    "https://www.googleapis.com/auth/youtube.upload",
+    "https://www.googleapis.com/auth/youtube.force-ssl"
+]
 
 def get_authenticated_service():
     os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"

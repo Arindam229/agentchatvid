@@ -6,7 +6,10 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 
-SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
+SCOPES = [
+    'https://www.googleapis.com/auth/youtube.upload',
+    'https://www.googleapis.com/auth/youtube.force-ssl'
+]
 
 def resolve_file_path(target, fallbacks):
     candidates = [target] + fallbacks
@@ -16,25 +19,13 @@ def resolve_file_path(target, fallbacks):
     return target
 
 def get_youtube_service(client_secrets_file='client_secrets.json', token_file='token.json'):
-    resolved_token_file = resolve_file_path(
-        token_file,
-        [
-            'token.json',
-            'token.pickle',
-            os.path.join('..', 'token.json'),
-            os.path.join('..', 'token.pickle'),
-            os.path.join('..', 'storyshortsagent', 'token.json')
-        ]
-    )
+    # Strictly look in gametraileragent directory first
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    strict_token = os.path.join(current_dir, 'token.json')
+    strict_secrets = os.path.join(current_dir, 'client_secrets.json')
 
-    resolved_secrets_file = resolve_file_path(
-        client_secrets_file,
-        [
-            'client_secrets.json',
-            os.path.join('..', 'client_secrets.json'),
-            os.path.join('..', 'storyshortsagent', 'client_secrets.json')
-        ]
-    )
+    resolved_token_file = strict_token if os.path.exists(strict_token) else resolve_file_path(token_file, ['token.json', 'token.pickle'])
+    resolved_secrets_file = strict_secrets if os.path.exists(strict_secrets) else resolve_file_path(client_secrets_file, ['client_secrets.json'])
 
     creds = None
     if os.path.exists(resolved_token_file):
