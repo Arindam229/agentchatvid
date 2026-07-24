@@ -32,6 +32,17 @@ storyshortsagent/client_secrets.json
 storyshortsagent/temp_story/
 storyshortsagent/output/
 
+# GameTrailers Agent
+gametraileragent/.env
+gametraileragent/token.json
+gametraileragent/spiderman-token.json
+gametraileragent/spiderman-secret.json
+gametraileragent/client_secrets.json
+gametraileragent/temp_trailers/
+gametraileragent/temp_overlay_*.png
+gametraileragent/top_*.mp4
+gametraileragent/thumbnail.jpg
+
 # OS files
 .DS_Store
 Thumbs.db

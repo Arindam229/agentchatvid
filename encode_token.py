@@ -5,27 +5,40 @@ print("\n=======================================================")
 print("         GITHUB ACTIONS SECRETS GENERATOR")
 print("=======================================================\n")
 
-token_found = False
+def print_secret(title, secret_name, paths):
+    found_path = None
+    for p in paths:
+        if os.path.exists(p):
+            found_path = p
+            break
+    if found_path:
+        with open(found_path, "rb") as f:
+            encoded = base64.b64encode(f.read()).decode("utf-8")
+        print(f"[+] Loaded from: {found_path}")
+        print(f">>> Secret Name: {secret_name}")
+        print(encoded)
+        print("\n-------------------------------------------------------\n")
+    else:
+        print(f"[-] No file found for {secret_name} in {paths}\n")
 
-# Try token.pickle first, fallback to token.json
-if os.path.exists("token.pickle"):
-    token_path = "token.pickle"
-elif os.path.exists(os.path.join("storyshortsagent", "token.json")):
-    token_path = os.path.join("storyshortsagent", "token.json")
-elif os.path.exists("token.json"):
-    token_path = "token.json"
-else:
-    token_path = None
+# 1. Main Shared YouTube Token
+print_secret(
+    "Main YouTube Token",
+    "YOUTUBE_TOKEN_BASE64",
+    ["token.pickle", "token.json", os.path.join("storyshortsagent", "token.json")]
+)
 
-if token_path:
-    with open(token_path, "rb") as f:
-        encoded_token = base64.b64encode(f.read()).decode("utf-8")
-    print(f"[+] Loaded credentials from: {token_path}")
-    print("\n>>> YOUTUBE_TOKEN_BASE64 Secret String:")
-    print(encoded_token)
-    print("\n=======================================================")
-    print("Copy the string above and paste it into GitHub Secret named: YOUTUBE_TOKEN_BASE64")
-    print("This single token will authorize uploads for BOTH pipelines!")
-    print("=======================================================\n")
-else:
-    print("[-] Error: No token file (token.pickle or token.json) found.")
+# 2. GameTrailers YouTube Token (if dedicated channel)
+print_secret(
+    "Game Trailers YouTube Token",
+    "GAMETRAILERS_TOKEN_BASE64",
+    [
+        os.path.join("gametraileragent", "token.json"),
+        os.path.join("..", "spidermanagent", "spiderman-token.json"),
+        os.path.join("..", "spidermanagent", "forza-token.json"),
+        "spiderman-token.json",
+        "forza-token.json"
+    ]
+)
+
+print("Copy the values above and add them as secrets in GitHub Repository Settings.")

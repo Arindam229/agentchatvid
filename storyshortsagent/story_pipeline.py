@@ -25,11 +25,18 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ─── Local imports ────────────────────────────────────────────────────────────
-from script_generator import generate_story
-from image_generator import generate_scene_images
-from video_animator import animate_images
-from caption_generator import process_captions
-from video_assembler import assemble_video
+try:
+    from script_generator import generate_story
+    from image_generator import generate_scene_images
+    from video_animator import animate_images
+    from caption_generator import process_captions
+    from video_assembler import assemble_video
+except ImportError:
+    from storyshortsagent.script_generator import generate_story
+    from storyshortsagent.image_generator import generate_scene_images
+    from storyshortsagent.video_animator import animate_images
+    from storyshortsagent.caption_generator import process_captions
+    from storyshortsagent.video_assembler import assemble_video
 
 # ─── Paths ────────────────────────────────────────────────────────────────────
 SPIDERMAN_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))

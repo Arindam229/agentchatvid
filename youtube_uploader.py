@@ -75,6 +75,11 @@ def upload_video(youtube, file_path, part_index=None, total_parts=None, ai_title
     response = request.execute()
     print(f"Upload successful! Video ID: {response.get('id')}")
 
+def upload_to_youtube(video_path, title, description, tags=None, category_id="20", thumbnail_path=None, client_secrets_file='client_secrets.json', token_file='token.json'):
+    youtube_service = get_authenticated_service()
+    upload_video(youtube_service, video_path, ai_title=title, ai_description=description)
+    return "uploaded"
+
 if __name__ == "__main__":
     import glob
     import json
