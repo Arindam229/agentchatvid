@@ -11,7 +11,15 @@ SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
 def get_youtube_service(client_secrets_file='client_secrets.json', token_file='token.json'):
     creds = None
     if os.path.exists(token_file):
-        creds = Credentials.from_authorized_user_file(token_file, SCOPES)
+        try:
+            creds = Credentials.from_authorized_user_file(token_file, SCOPES)
+        except Exception:
+            import pickle
+            try:
+                with open(token_file, "rb") as f:
+                    creds = pickle.load(f)
+            except Exception as e:
+                print(f"Error loading credentials from {token_file}: {e}")
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())

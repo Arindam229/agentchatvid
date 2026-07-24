@@ -17,10 +17,16 @@ def get_authenticated_service():
     token_file = "token.pickle"
     
     creds = None
-    # The file token.pickle stores the user's access and refresh tokens
     if os.path.exists(token_file):
-        with open(token_file, "rb") as token:
-            creds = pickle.load(token)
+        try:
+            with open(token_file, "rb") as token:
+                creds = pickle.load(token)
+        except Exception:
+            try:
+                from google.oauth2.credentials import Credentials
+                creds = Credentials.from_authorized_user_file(token_file, scopes)
+            except Exception as e:
+                print(f"Failed to load credentials from {token_file}: {e}")
             
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
