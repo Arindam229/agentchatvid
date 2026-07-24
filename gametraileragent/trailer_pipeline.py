@@ -1,6 +1,9 @@
 import PIL.Image
 if not hasattr(PIL.Image, 'ANTIALIAS'):
-    PIL.Image.ANTIALIAS = PIL.Image.Resampling.LANCZOS
+    if hasattr(PIL.Image, 'Resampling'):
+        PIL.Image.ANTIALIAS = PIL.Image.Resampling.LANCZOS
+    elif hasattr(PIL.Image, 'LANCZOS'):
+        PIL.Image.ANTIALIAS = PIL.Image.LANCZOS
 
 import os
 import time
@@ -24,6 +27,20 @@ try:
     from youtube_uploader import upload_to_youtube
 except ImportError:
     from youtube_uploader import upload_video as upload_to_youtube
+
+def sanitize_text_for_pil(text: str) -> str:
+    if not text:
+        return ""
+    replacements = {
+        '\u2019': "'", '\u2018': "'",
+        '\u201c': '"', '\u201d': '"',
+        '\u2013': '-', '\u2014': '-',
+        '\u2026': '...', '\u00a0': ' ',
+        '’': "'", '‘': "'", '“': '"', '”': '"', '—': '-', '–': '-'
+    }
+    for orig, rep in replacements.items():
+        text = text.replace(orig, rep)
+    return text.encode('ascii', errors='ignore').decode('ascii')
 
 HISTORY_FILE = "trailer_history.json"
 GENRES = ["Action", "Strategy", "RPG", "Indie", "Adventure", "Sports", "Simulation", "Racing"]
@@ -268,14 +285,23 @@ def create_intro_clip(genre):
     return clip
 
 def create_cyberpunk_overlay(text, output_path="cyberpunk_overlay.png"):
+    text = sanitize_text_for_pil(text)
+    font_path = "Roboto-Regular.ttf"
+    if not os.path.exists(font_path):
+        font_path = os.path.join("..", "Roboto-Regular.ttf")
     try:
-        font = ImageFont.truetype("arialbd.ttf", 60)
-        font_small = ImageFont.truetype("arialbd.ttf", 45)
-        font_desc = ImageFont.truetype("arial.ttf", 30)
-    except:
-        font = ImageFont.load_default()
-        font_small = ImageFont.load_default()
-        font_desc = ImageFont.load_default()
+        font = ImageFont.truetype(font_path, 60)
+        font_small = ImageFont.truetype(font_path, 45)
+        font_desc = ImageFont.truetype(font_path, 30)
+    except Exception:
+        try:
+            font = ImageFont.truetype("arialbd.ttf", 60)
+            font_small = ImageFont.truetype("arialbd.ttf", 45)
+            font_desc = ImageFont.truetype("arial.ttf", 30)
+        except Exception:
+            font = ImageFont.load_default()
+            font_small = ImageFont.load_default()
+            font_desc = ImageFont.load_default()
         
     lines = text.split('\n')
     
@@ -364,6 +390,7 @@ def create_gradient_mask(size):
     return base
 
 def generate_thumbnail(bg_url, genre, output_path):
+    genre = sanitize_text_for_pil(genre)
     print(f"Generating thumbnail from {bg_url}")
     try:
         res = requests.get(bg_url)
@@ -388,13 +415,20 @@ def generate_thumbnail(bg_url, genre, output_path):
     img.paste(gradient, (0, 0), gradient)
     
     d = ImageDraw.Draw(img, 'RGBA')
+    font_path = "Roboto-Regular.ttf"
+    if not os.path.exists(font_path):
+        font_path = os.path.join("..", "Roboto-Regular.ttf")
+
     try:
         font_large = ImageFont.truetype("impact.ttf", 250)
     except:
         try:
-            font_large = ImageFont.truetype("arialbd.ttf", 200)
+            font_large = ImageFont.truetype(font_path, 200)
         except:
-            font_large = ImageFont.load_default()
+            try:
+                font_large = ImageFont.truetype("arialbd.ttf", 200)
+            except:
+                font_large = ImageFont.load_default()
             
     text_top = "TOP 5"
     text_mid = f"{genre.upper()}"
