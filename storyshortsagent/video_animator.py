@@ -5,7 +5,11 @@ Replaces basic SVD animation with state-of-the-art text-to-video.
 import os
 import subprocess
 import random
-import torch
+try:
+    import torch
+except ImportError:
+    torch = None
+
 from pathlib import Path
 
 # Use CogVideoX-2b for 8GB VRAM compatibility (RTX 4060)
@@ -15,6 +19,9 @@ _COG_PIPE = None
 def get_cog_pipeline():
     """Load CogVideoX pipeline once and cache it."""
     global _COG_PIPE
+    if torch is None:
+        print("[CogVideo] PyTorch not installed. Using fast FFmpeg Ken Burns fallback.")
+        return None
     if _COG_PIPE is not None:
         return _COG_PIPE
 
