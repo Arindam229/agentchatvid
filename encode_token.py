@@ -34,10 +34,7 @@ print_secret(
     "GAMETRAILERS_TOKEN_BASE64",
     [
         os.path.join("gametraileragent", "token.json"),
-        os.path.join("..", "spidermanagent", "spiderman-token.json"),
-        os.path.join("..", "spidermanagent", "forza-token.json"),
-        "spiderman-token.json",
-        "forza-token.json"
+        os.path.join("gametraileragent", "token.pickle")
     ]
 )
 
